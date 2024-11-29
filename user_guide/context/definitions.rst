@@ -10,9 +10,7 @@ PHP code called step definitions:
 
 .. code-block:: php
 
-    /**
-     * @When I do something with :argument
-     */
+    #[When('I do something with :argument')]
     public function iDoSomethingWith($argument)
     {
         // do something with $argument
@@ -37,32 +35,25 @@ patterns bound to each method in your ``FeatureContext``. If the line of Gherkin
 satisfies a bound pattern, its corresponding step definition is executed. It's
 that simple!
 
-Behat uses php-doc annotations to bind patterns to ``FeatureContext`` methods:
+Behat uses PHP attributes to bind patterns to ``FeatureContext`` methods:
 
 .. code-block:: php
 
-    /**
-     * @When I do something with :methodArgument
-     */
+    #[When('I do something with :methodArgument')]
     public function someMethod($methodArgument) {}
 
 Let's take a closer look at this code:
 
-#. ``@When`` is a definition keyword. There are 3 supported keywords in
-   annotations: ``@Given``/``@When``/``@Then``. These three definition keywords
+#. ``When`` is a definition keyword. There are 3 supported keywords implemented as
+   attributes: ``Given``/``When``/``Then``. These three definition keywords
    are actually equivalent, but all three are available so that your step
    definition remains readable.
 
-#. The text after the keyword is the step text pattern (e.g.
+#. The argument to the attribute is the step text pattern (e.g.
    ``I do something with :methodArgument``).
 
 #. All token values of the pattern (e.g. ``:methodArgument``) will be captured
    and passed to the method argument with the same name (``$methodArgument``).
-
-.. note::
-
-    Notice the comment block starts with ``/**``, and not the usual ``/*``.
-    This is important for Behat to be able to parse such comments as annotations!
 
 As you have probably noticed, this pattern is quite general and its corresponding
 method will be called for steps that contain ``... I do something with ...``,
@@ -104,26 +95,22 @@ a different argument:
 .. note::
 
     Behat does not differentiate between step keywords when matching patterns
-    to methods. So a step defined with ``@When`` could also be matched to
-    ``@Given ...``, ``@Then ...``, ``@And ...``, ``@But ...``, etc.
+    to methods. So a step defined with ``When`` could also be matched to
+    ``Given ...``, ``Then ...``, ``And ...``, ``But ...``, etc.
 
 Your step definitions can also define multiple arguments to pass to its matching
 ``FeatureContext`` method:
 
 .. code-block:: php
 
-    /**
-     * @When I do something with :stringArgument and with :numberArgument
-     */
+    #[When('I do something with :stringArgument and with :numberArgument')]
     public function someMethod($stringArgument, $numberArgument) {}
 
 You can also specify alternative words and optional parts of words, like this:
 
 .. code-block:: php
 
-    /**
-     * @When there is/are :count monster(s)
-     */
+    #[When('there is/are :count monster(s)')]
     public function thereAreMonsters($count) {}
 
 If you need to come up with a much more complicated matching algorithm, you can
@@ -131,21 +118,17 @@ always use good old regular expressions:
 
 .. code-block:: php
 
-    /**
-     * @When /^there (?:is|are) (\d+) monsters?$/i
-     */
+    #[When('/^there (?:is|are) (\d+) monsters?$/i')]
     public function thereAreMonsters($count) {}
 
 And if you want to be able to say things in different ways that are not so
-easily written as a single regular expression, you can write multiple
-annotations for the one method:
+easily written as a single regular expression, you can add multiple
+attributes for the one method:
 
 .. code-block:: php
 
-    /**
-     * @When /^I create (\d+) monsters$/i
-     * @Given /^(\d+) monster(?:s|) (?:have|has) been created$/i
-     */
+    #[When('/^I create (\d+) monsters$/i')]
+    #[Given('/^(\d+) monster(?:s|) (?:have|has) been created$/i')]
     public function thereAreMonsters($count) {}
 
 Behat will call the corresponding method if any of the patterns matches.
@@ -163,7 +146,7 @@ Definition Snippets
 -------------------
 
 You now know how to write step definitions by hand, but writing all these
-method stubs, annotations and patterns by hand is tedious. Behat makes
+method stubs, attributes and patterns by hand is tedious. Behat makes
 this routine task much easier and fun by generating definition snippets for
 you! Let's pretend that you have this feature:
 
@@ -183,7 +166,7 @@ interface and you test a feature with missing steps in Behat:
 
 Behat will provide auto-generated snippets for your context class.
 
-It not only generates the proper definition annotation type (``@Given``), but
+It not only generates the proper definition attribute type (``Given``), but
 also a proper pattern with tokens capturing (``:arg1``, ``:arg2``), method
 name (``someStepWithArgument()``, ``numberStepWith()``) and arguments (
 ``$arg1``, ``$arg2``), all based just on the text of the step. Isn't that cool?
@@ -252,15 +235,16 @@ Let's pretend our context class contains the code below:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /** @Given some step with :argument1 argument */
+        #[Given('some step with :argument1 argument')]
         public function someStepWithArgument($argument1)
         {
         }
 
-        /** @Given number step with :argument1 */
+        #[Given('number step with :argument1')]
         public function numberStepWith($argument1)
         {
         }
@@ -279,7 +263,7 @@ execution.
 
     Enable the "posix" PHP extension in order to see colorful Behat output.
     Depending on your Linux, Mac OS or other Unix system it might be part
-    of the default PHP installation or a separate ``php5-posix`` package.
+    of the default PHP installation or a separate ``posix`` package.
 
 Undefined Steps
 ~~~~~~~~~~~~~~~
@@ -333,16 +317,17 @@ Let's pretend your ``FeatureContext`` looks like this:
 
     use Behat\Behat\Context\Context;
     use Behat\Behat\Tester\Exception\PendingException;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /** @Given some step with :argument1 argument */
+        #[Given('some step with :argument1 argument')]
         public function someStepWithArgument($argument1)
         {
             throw new PendingException('Do some string work');
         }
 
-        /** @Given number step with :argument1 */
+        #[Given('number step with :argument1')]
         public function numberStepWith($argument1)
         {
             throw new PendingException('Do some number work');
@@ -383,16 +368,17 @@ Let's pretend, that your ``FeatureContext`` has following code:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /** @Given some step with :argument1 argument */
+        #[Given('some step with :argument1 argument')]
         public function someStepWithArgument($argument1)
         {
             throw new Exception('some exception');
         }
 
-        /** @Given number step with :argument1 */
+        #[Given(number step with :argument1')]
         public function numberStepWith($argument1)
         {
         }
@@ -467,15 +453,16 @@ Consider your ``FeatureContext`` has following code:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /** @Given /^.* step with .*$/ */
+        #[Given('/^.* step with .*$/')]
         public function someStepWithArgument()
         {
         }
 
-        /** @Given /^number step with (\d+)$/ */
+        #[Given('/^number step with (\d+)$/')]
         public function numberStepWith($argument1)
         {
         }
@@ -492,7 +479,7 @@ Redundant Step Definitions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Behat will not let you define a step expression's corresponding pattern more
-than once. For example, look at the two ``@Given`` patterns defined in this
+than once. For example, look at the two ``Given`` patterns defined in this
 feature context:
 
 .. code-block:: php
@@ -500,15 +487,16 @@ feature context:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /** @Given /^number step with (\d+)$/ */
+        #[Given('/^number step with (\d+)$/')]
         public function workWithNumber($number1)
         {
         }
 
-        /** @Given /^number step with (\d+)$/ */
+        #[Given('/^number step with (\d+)$/')]
         public function workDifferentlyWithNumber($number1)
         {
         }
@@ -530,9 +518,9 @@ Each transformation method must return a new value. This value then replaces
 the original string value that was going to be used as an argument to a step
 definition method.
 
-Transformation methods are defined using the same annotation style as step
-definition methods, but instead use the ``@Transform`` keyword, followed by
-a matching pattern.
+Transformation methods are defined using the same attribute style as step
+definition methods, but instead use the ``Transform`` attribute with
+a matching pattern as argument.
 
 As a basic example, you can automatically cast all numeric arguments to
 integers with the following context class code:
@@ -542,20 +530,18 @@ integers with the following context class code:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Then;
+    use Behat\Transformation\Transform;
 
     class FeatureContext implements Context
     {
-        /**
-         * @Transform /^(\d+)$/
-         */
+        #[Transform('/^(\d+)$/')]
         public function castStringToNumber($string)
         {
             return intval($string);
         }
 
-        /**
-         * @Then a user :name, should have :count followers
-         */
+        #[Then('a user :name, should have :count followers')]
         public function assertUserHasFollowers($name, $count)
         {
             if ('integer' !== gettype($count)) {
@@ -579,20 +565,18 @@ will create and return a new ``User`` object:
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Step\Then;
+    use Behat\Transformation\Transform;
 
     class FeatureContext implements Context
     {
-        /**
-         * @Transform :user
-         */
+        #[Transform(':user')]
         public function castUsernameToUser($user)
         {
             return new User($user);
         }
 
-        /**
-         * @Then a :user, should have :count followers
-         */
+        #[Then('a :user, should have :count followers')]
         public function assertUserHasFollowers(User $user, $count)
         {
             if ('integer' !== gettype($count)) {
@@ -627,12 +611,11 @@ And our ``FeatureContext`` class looks like this:
 
     use Behat\Behat\Context\Context;
     use Behat\Gherkin\Node\TableNode;
+    use Behat\Step\Given;
 
     class FeatureContext implements Context
     {
-        /**
-         * @Given the following users:
-         */
+        #[Given('the following users:')]
         public function pushUsers(TableNode $usersTable)
         {
             $users = array();
@@ -665,12 +648,13 @@ via a comma-delimited list of the column headers prefixed with ``table:``:
 
     use Behat\Behat\Context\Context;
     use Behat\Gherkin\Node\TableNode;
+    use Behat\Step\Given;
+    use Behat\Step\Then;
+    use Behat\Transformation\Transform;
 
     class FeatureContext implements Context
     {
-        /**
-         * @Transform table:name,followers
-         */
+        #[Transform('table:name,followers')]
         public function castUsersTable(TableNode $usersTable)
         {
             $users = array();
@@ -684,17 +668,13 @@ via a comma-delimited list of the column headers prefixed with ``table:``:
             return $users;
         }
 
-        /**
-         * @Given the following users:
-         */
+        #[Given('the following users:')]
         public function pushUsers(array $users)
         {
             // do something with $users
         }
 
-        /**
-         * @Then I expect the following users:
-         */
+        #[Then('I expect the following users:')]
         public function assertUsers(array $users)
         {
             // do something with $users

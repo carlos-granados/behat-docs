@@ -16,6 +16,10 @@ application behaves, then the context class is all about how to test it.
     // features/bootstrap/FeatureContext.php
 
     use Behat\Behat\Context\Context;
+    use Behat\Hook\BeforeFeature;
+    use Behat\Step\Given;
+    use Behat\Step\Then;
+    use Behat\Step\When;
 
     class FeatureContext implements Context
     {
@@ -24,25 +28,25 @@ application behaves, then the context class is all about how to test it.
             // instantiate context
         }
 
-        /** @BeforeFeature */
+        #[BeforeFeature]
         public static function prepareForTheFeature()
         {
             // clean database or do other preparation stuff
         }
 
-        /** @Given we have some context */
+        #[Given('we have some context')]
         public function prepareContext()
         {
             // do something
         }
 
-        /** @When event occurs */
+        #[When('event occurs')]
         public function doSomeAction()
         {
             // do something
         }
 
-        /** @Then something should be done */
+        #[Then('something should be done')]
         public function checkOutcomes()
         {
             // do something
@@ -117,8 +121,8 @@ has its very own context instance. This means 2 things:
 
 #. Every step in a single scenario is executed inside a common context
    instance. This means you can set ``private`` instance variables inside
-   your ``@Given`` steps and you'll be able to read their new values inside
-   your ``@When`` and ``@Then`` steps.
+   your ``Given`` steps and you'll be able to read their new values inside
+   your ``When`` and ``Then`` steps.
 
 Multiple Contexts
 -----------------
@@ -356,9 +360,7 @@ That means if you put some step definitions or hooks inside a trait:
 
     trait ProductsDictionary
     {
-        /**
-         * @Given there is a(n) :product, which costs £:price
-         */
+        #[Given('there is a(n) :product, which costs £:price')]
         public function thereIsAWhichCostsPs($product, $price)
         {
             throw new PendingException();

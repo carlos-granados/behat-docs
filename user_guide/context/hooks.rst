@@ -14,25 +14,23 @@ specific scenario? Hooks to the rescue:
     use Behat\Behat\Context\Context;
     use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
     use Behat\Behat\Hook\Scope\AfterScenarioScope;
+    use Behat\Hook\AfterScenario;
+    use Behat\Hook\BeforeSuite;
 
     class FeatureContext implements Context
     {
-        /**
-         * @BeforeSuite
-         */
-         public static function prepare(BeforeSuiteScope $scope)
-         {
-             // prepare system for test suite
-             // before it runs
-         }
+        #[BeforeSuite]
+        public static function prepare(BeforeSuiteScope $scope)
+        {
+            // prepare system for test suite
+            // before it runs
+        }
 
-         /**
-          * @AfterScenario @database
-          */
-         public function cleanDB(AfterScenarioScope $scope)
-         {
-             // clean database after scenarios,
-             // tagged with @database
+         #[AfterScenario('@database')]
+        public function cleanDB(AfterScenarioScope $scope)
+        {
+            // clean database after scenarios,
+            // tagged with @database
          }
     }
 
@@ -42,7 +40,7 @@ Behat Hook System
 Behat provides a number of hook points which allow us to run arbitrary
 logic at various points in the Behat test cycle. Hooks are a lot like
 step definitions or transformations - they are just simple methods
-with special annotations inside your context classes. There is no
+with special attributes inside your context classes. There is no
 association between where the hook is defined and which node it is run
 for, but you can use tagged or named hooks if you want more fine grained
 control.
@@ -117,23 +115,21 @@ of these actions. Behat allows you to use the following hooks:
    hook receives an optional argument  with an instance of the
    ``Behat\Behat\Hook\Scope\AfterStepScope`` class.
 
-You can use any of these hooks by annotating any of your methods in your context
+You can use any of these hooks by adding attributes to any of your methods in your context
 class:
 
 .. code-block:: php
 
-    /**
-     * @BeforeSuite
-     */
+    #[BeforeSuite]
     public static function prepare($scope)
     {
         // prepare system for test suite
         // before it runs
     }
 
-We use annotations as we did before with :doc:`definitions </user_guide/context/definitions>`.
-Simply use the annotation of the name of the hook you want to use (e.g.
-``@BeforeSuite``).
+We use attributes as we did before with :doc:`definitions </user_guide/context/definitions>`.
+Simply use the attribute of the name of the hook you want to use (e.g.
+``BeforeSuite``).
 
 Suite Hooks
 -----------
@@ -147,21 +143,23 @@ be defined as static methods in the context class:
 
     use Behat\Testwork\Hook\Scope\BeforeSuiteScope;
     use Behat\Testwork\Hook\Scope\AfterSuiteScope;
+    use Behat\Hook\AfterSuite;
+    use Behat\Hook\BeforeSuite;
 
-    /** @BeforeSuite */
+    #[BeforeSuite]
     public static function setup(BeforeSuiteScope $scope)
     {
     }
 
-    /** @AfterSuite */
+    #[AfterSuite]
     public static function teardown(AfterSuiteScope $scope)
     {
     }
 
 There are two suite hook types available:
 
-* ``@BeforeSuite`` - executed before any feature runs.
-* ``@AfterSuite`` - executed after all features have run.
+* ``BeforeSuite`` - executed before any feature runs.
+* ``AfterSuite`` - executed after all features have run.
 
 Feature Hooks
 -------------
@@ -174,13 +172,15 @@ inside your context:
 
     use Behat\Behat\Hook\Scope\BeforeFeatureScope;
     use Behat\Behat\Hook\Scope\AfterFeatureScope;
+    use Behat\Hook\AfterFeature;
+    use Behat\Hook\BeforeFeature;
 
-    /** @BeforeFeature */
+    #[BeforeFeature]
     public static function setupFeature(BeforeFeatureScope $scope)
     {
     }
 
-    /** @AfterFeature */
+    #[AfterFeature]
     public static function teardownFeature(AfterFeatureScope $scope)
     {
     }
@@ -188,8 +188,8 @@ inside your context:
 
 There are two feature hook types available:
 
-* ``@BeforeFeature`` - gets executed before every feature in suite.
-* ``@AfterFeature`` - gets executed after every feature in suite.
+* ``BeforeFeature`` - gets executed before every feature in suite.
+* ``AfterFeature`` - gets executed after every feature in suite.
 
 Scenario Hooks
 --------------
@@ -203,30 +203,32 @@ any object properties you set during your scenario:
 
     use Behat\Behat\Hook\Scope\BeforeScenarioScope;
     use Behat\Behat\Hook\Scope\AfterScenarioScope;
+    use Behat\Hook\AfterScenario;
+    use Behat\Hook\BeforeScenario;
 
-    /** @BeforeScenario */
+    #[BeforeScenario]
     public function before(BeforeScenarioScope $scope)
     {
     }
 
-    /** @AfterScenario */
+    #[AfterScenario]
     public function after(AfterScenarioScope $scope)
     {
     }
 
 There are two scenario hook types available:
 
-* ``@BeforeScenario`` - executed before every scenario in each feature.
-* ``@AfterScenario`` - executed after every scenario in each feature.
+* ``BeforeScenario`` - executed before every scenario in each feature.
+* ``AfterScenario`` - executed after every scenario in each feature.
 
 Now, the interesting part:
 
-The ``@BeforeScenario`` hook executes not only
+The ``BeforeScenario`` hook executes not only
 before each scenario in each feature, but before **each example row** in
 the scenario outline. Yes, each scenario outline example row works almost the
 same as a usual scenario.
 
-``@AfterScenario`` functions exactly the same way, being executed both after
+``AfterScenario`` functions exactly the same way, being executed both after
 usual scenarios and outline examples.
 
 Step Hooks
@@ -240,13 +242,15 @@ instance methods in the same way as scenario hooks are:
 
     use Behat\Behat\Hook\Scope\BeforeStepScope;
     use Behat\Behat\Hook\Scope\AfterStepScope;
+    use Behat\Hook\AfterStep;
+    use Behat\Hook\BeforeStep;
 
-    /** @BeforeStep */
+    #[BeforeStep]
     public function beforeStep(BeforeStepScope $scope)
     {
     }
 
-    /** @AfterStep */
+    #[AfterStep]
     public function afterStep(AfterStepScope $scope)
     {
     }
@@ -254,22 +258,20 @@ instance methods in the same way as scenario hooks are:
 
 There are two step hook types available:
 
-* ``@BeforeStep`` - executed before every step in each scenario.
-* ``@AfterStep`` - executed after every step in each scenario.
+* ``BeforeStep`` - executed before every step in each scenario.
+* ``AfterStep`` - executed after every step in each scenario.
 
 Tagged Hooks
 ------------
 
 Sometimes you may want a certain hook to run only for certain scenarios,
-features or steps. This can be achieved by associating a ``@BeforeFeature``,
-``@AfterFeature``, ``@BeforeScenario`` or ``@AfterScenario`` hook with one
+features or steps. This can be achieved by associating a ``BeforeFeature``,
+``AfterFeature``, ``BeforeScenario`` or ``AfterScenario`` hook with one
 or more tags. You can also use ``OR`` (``||``) and ``AND`` (``&&``) tags:
 
 .. code-block:: php
 
-    /**
-     * @BeforeScenario @database,@orm
-     */
+    #[BeforeScenario('@database,@orm')]
     public function cleanDatabase()
     {
         // clean database before
@@ -280,9 +282,7 @@ Use the ``&&`` tag to execute a hook only when it has *all* provided tags:
 
 .. code-block:: php
 
-    /**
-     * @BeforeScenario @database&&@fixtures
-     */
+    #[BeforeScenario('@database&&@fixtures')]
     public function cleanDatabaseFixtures()
     {
         // clean database fixtures

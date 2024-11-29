@@ -322,12 +322,11 @@ usually as input to a ``Given`` or as expected output from a ``Then``:
     .. code-block:: php
 
         use Behat\Gherkin\Node\TableNode;
+        use Behat\Step\Given;
 
         // ...
 
-        /**
-         * @Given the following people exist:
-         */
+        #[Given('the following people exist:')]
         public function thePeopleExist(TableNode $table)
         {
             foreach ($table as $row) {
@@ -373,12 +372,11 @@ three double-quote marks (``"""``), placed on their own line:
     .. code-block:: php
 
         use Behat\Gherkin\Node\PyStringNode;
+        use Behat\Step\Given;
 
         // ...
 
-        /**
-         * @Given a blog post named :title with:
-         */
+        #[Given('a blog post named :title with:')]
         public function blogPost($title, PyStringNode $markdown)
         {
             $this->createPost($title, $markdown->getRaw());
