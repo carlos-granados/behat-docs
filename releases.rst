@@ -48,7 +48,8 @@ Behat only supports current versions of PHP and third-party dependency packages 
 
 By "current", we mean:
 
-* PHP versions that are listed as receiving active support or security fixes on the `official php.net version support page`_.
+* PHP versions that are listed as receiving active support or security fixes
+  on the `official php.net version support page`_.
 * Symfony versions that are listed as maintained or receiving security fixes on the `official Symfony releases page`_.
 
 Once a PHP or Symfony version reaches End of Life we will remove it from our composer.json and CI flows.
@@ -56,7 +57,8 @@ Once a PHP or Symfony version reaches End of Life we will remove it from our com
 .. note::
    When we drop support for a PHP / dependency version we will highlight this in the CHANGELOG, but we will treat
    it as a minor release. Composer will automatically protect users from upgrading to a version that does not support
-   their environment. Users running Behat as a ``.phar`` should review the release notes before downloading a new version.
+   their environment. Users running Behat as a ``.phar`` should review the release notes before downloading
+   a new version.
 
 We will not ship bugfix releases for unsupported PHP / dependency versions, unless:
 

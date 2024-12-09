@@ -13,13 +13,14 @@ so other contexts can be retrieved using a ``BeforeScenario`` hook:
 
     use Behat\Behat\Context\Context;
     use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+    use Behat\Hook\BeforeScenario;
 
     class FeatureContext implements Context
     {
         /** @var \Behat\MinkExtension\Context\MinkContext */
         private $minkContext;
 
-        /** @BeforeScenario */
+        #[BeforeScenario]
         public function gatherContexts(BeforeScenarioScope $scope)
         {
             $environment = $scope->getEnvironment();

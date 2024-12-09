@@ -270,13 +270,11 @@ Finally, we got to the automation part. How does Behat know what to do
 when it sees ``Given there is a "Sith Lord Lightsaber", which costs £5``? You
 tell it. You write PHP code inside your context class (``FeatureContext``
 in our case) and tell Behat that this code represents a specific scenario step
-(via an annotation with a pattern):
+(via an attribute with a pattern):
 
 .. code-block:: php
 
-    /**
-     * @Given there is a(n) :arg1, which costs £:arg2
-     */
+    #[Given('there is a(n) :arg1, which costs £:arg2')]
     public function thereIsAWhichCostsPs($arg1, $arg2)
     {
         throw new PendingException();
@@ -284,16 +282,19 @@ in our case) and tell Behat that this code represents a specific scenario step
 
 .. note::
 
-    ``/** ... */`` is a special syntax in PHP called a doc-block. It is
-    discoverable at runtime and used by different PHP frameworks as a
-    way to provide additional meta-information for the classes, methods and
-    functions. Behat uses doc-blocks for step definitions, step
-    transformations and hooks.
+    Behat uses PHP Attributes for step definitions, step
+    transformations and hooks. It also supports doc-block
+    annotations for compatibility with legacy code, but this
+    syntax is deprecated - see the :doc:`annotations </user_guide/annotations>` documentation
+    for details.
 
-``@Given there is a(n) :arg1, which costs £:arg2`` above the method tells Behat
+``#[Given('there is a(n) :arg1, which costs £:arg2')]`` above the method tells Behat
 that this particular method should be executed whenever Behat sees step that
-looks like ``... there is a ..., which costs £...``. This pattern will match
-any of the following steps:
+looks like ``... there is a ..., which costs £...``.
+
+The ``#[Given]``, ``#[When]`` and ``#[Then]`` attributes are functionally identical - they
+only exist separately to help keep the wording of your step definitions readable. So
+this pattern will match any of the following steps:
 
 .. code-block:: gherkin
 
@@ -324,9 +325,7 @@ Not only that, but Behat will capture tokens (words starting with ``:``, e.g.
 
     .. code-block:: php
 
-        /**
-         * @Given /there is an? \"([^\"]+)\", which costs £([\d\.]+)/
-         */
+        #[Given('/there is an? \"([^\"]+)\", which costs £([\d\.]+)/')]
         public function thereIsAWhichCostsPs($arg1, $arg2)
         {
             throw new PendingException();
@@ -341,9 +340,7 @@ got:
 
     --- FeatureContext has missing steps. Define them with these snippets:
 
-        /**
-         * @Given there is a :arg1, which costs £:arg2
-         */
+        #[Given('there is a :arg1, which costs £:arg2')]
         public function thereIsAWhichCostsPs($arg1, $arg2)
         {
             throw new PendingException();
@@ -370,36 +367,31 @@ If you executed ``--append-snippets``, your ``FeatureContext`` should look like:
     use Behat\Behat\Context\SnippetAcceptingContext;
     use Behat\Gherkin\Node\PyStringNode;
     use Behat\Gherkin\Node\TableNode;
+    use Behat\Step\Given;
+    use Behat\Step\Then;
+    use Behat\Step\When;
 
     class FeatureContext implements SnippetAcceptingContext
     {
-        /**
-         * @Given there is a :arg1, which costs £:arg2
-         */
+        #[Given('there is a :arg1, which costs £:arg2')]
         public function thereIsAWhichCostsPs($arg1, $arg2)
         {
             throw new PendingException();
         }
 
-        /**
-         * @When I add the :arg1 to the basket
-         */
+        #[When('I add the :arg1 to the basket')]
         public function iAddTheToTheBasket($arg1)
         {
             throw new PendingException();
         }
 
-        /**
-         * @Then I should have :arg1 product(s) in the basket
-         */
+         #[Then('I should have :arg1 product(s) in the basket')]
         public function iShouldHaveProductInTheBasket($arg1)
         {
             throw new PendingException();
         }
 
-        /**
-         * @Then the overall basket price should be £:arg1
-         */
+         #[Then('the overall basket price should be £:arg1')]
         public function theOverallBasketPriceShouldBePs($arg1)
         {
             throw new PendingException();
@@ -433,6 +425,9 @@ code we could come up with to fulfil our scenario. Something like this:
     use Behat\Behat\Context\SnippetAcceptingContext;
     use Behat\Gherkin\Node\PyStringNode;
     use Behat\Gherkin\Node\TableNode;
+    use Behat\Step\Given;
+    use Behat\Step\Then;
+    use Behat\Step\When;
 
     class FeatureContext implements SnippetAcceptingContext
     {
@@ -445,25 +440,19 @@ code we could come up with to fulfil our scenario. Something like this:
             $this->basket = new Basket($this->shelf);
         }
 
-        /**
-         * @Given there is a :product, which costs £:price
-         */
+        #[Given('there is a :arg1, which costs £:arg2')]
         public function thereIsAWhichCostsPs($product, $price)
         {
             $this->shelf->setProductPrice($product, floatval($price));
         }
 
-        /**
-         * @When I add the :product to the basket
-         */
+        #[When('I add the :arg1 to the basket')]
         public function iAddTheToTheBasket($product)
         {
             $this->basket->addProduct($product);
         }
 
-        /**
-         * @Then I should have :count product(s) in the basket
-         */
+         #[Then('I should have :arg1 product(s) in the basket')]
         public function iShouldHaveProductInTheBasket($count)
         {
             // Normally you would import this class - we are using the fully qualified name
@@ -474,9 +463,7 @@ code we could come up with to fulfil our scenario. Something like this:
             );
         }
 
-        /**
-         * @Then the overall basket price should be £:price
-         */
+         #[Then('the overall basket price should be £:arg1')]
         public function theOverallBasketPriceShouldBePs($price)
         {
             \PHPUnit\Framework\Assert::assertSame(

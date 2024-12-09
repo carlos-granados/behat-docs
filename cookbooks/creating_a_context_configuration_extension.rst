@@ -30,6 +30,7 @@ The configuration will also control whether the behaviour is enabled or not.
 
   use Behat\Behat\Context\Context as BehatContext;
   use Behat\Behat\Tester\Exception\PendingException;
+  use Behat\Step\Given;
 
   class HelloWorldContext implements BehatContext
   {
@@ -45,7 +46,7 @@ The configuration will also control whether the behaviour is enabled or not.
           $this->text = $text;
       }
 
-      /** @Given I say Hello World */
+      #[Given('I say Hello World')]
       public function helloWorld()
       {
           if ($this->enable) {
