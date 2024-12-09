@@ -23,29 +23,46 @@ really powerful and ``behat.yml`` makes them that much more powerful:
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('core_features'))
+            new Suite('core_features')
                 ->withPaths('%paths.base%/features/core')
                 ->withContexts(CoreDomainContext::class)
         )
         ->withSuite(
-            (new Suite('user_features'))
+            new Suite('user_features')
                 ->withFilter(new RoleFilter('user'))
                 ->withPaths('%paths.base%/features/web')
                 ->withContexts(UserContext::class)
         )
         ->withSuite(
-            (new Suite('admin_features'))
+            new Suite('admin_features')
                 ->withFilter(new RoleFilter('admin'))
                 ->withPaths('%paths.base%/features/web')
                 ->withContexts(AdminContext::class)
         )
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
+
+.. note::
+
+    On PHP < 8.4, you need to wrap new invocations with parentheses before calling config object methods.
+
+    .. code-block:: php
+
+        // ...
+        // $profile = new Profile('default')
+        $profile = (new Profile('default'))
+            ->withSuite(
+                // new Suite('core_features')
+                (new Suite('core_features'))
+                    ->withPaths('%paths.base%/features/core')
+                    ->withContexts(CoreDomainContext::class)
+            )
+        // ...
 
 Suite Paths
 -----------
@@ -62,9 +79,9 @@ configuration:
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('core_features'))
+            new Suite('core_features')
                 ->withPaths(
                     '%paths.base%/features',
                     '%paths.base%/test/features',
@@ -91,15 +108,15 @@ You could, for example, tell Behat to look into the
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('web_features'))
+            new Suite('web_features')
                 ->withPaths('%paths.base%/features/web')
                 ->withContexts(WebContext::class)
         )
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
 
@@ -117,20 +134,20 @@ You then might want to also describe some API-specific features in
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('web_features'))
+            new Suite('web_features')
                 ->withPaths('%paths.base%/features/web')
                 ->withContexts(WebContext::class)
         )
         ->withSuite(
-            (new Suite('api_features'))
+            new Suite('api_features')
                 ->withPaths('%paths.base%/features/api')
                 ->withContexts(ApiContext::class)
         )
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
 
@@ -173,29 +190,24 @@ features with specific tag (or name) in specific contexts:
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('web_features'))
+            new Suite('web_features')
                 ->withFilter(new TagFilter('@web'))
                 ->withPaths('%paths.base%/features')
                 ->withContexts(WebContext::class)
         )
         ->withSuite(
-            (new Suite('api_features'))
+            new Suite('api_features')
                 ->withFilter(new TagFilter('@api'))
                 ->withPaths('%paths.base%/features')
                 ->withContexts(ApiContext::class)
         )
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
-
-.. note::
-
-    The ``@`` character is a special and requires the tag to be
-    put in quotes.
 
 This configuration will tell Behat to run features and scenarios
 tagged as ``@web`` in ``WebContext`` and features and scenarios
@@ -216,15 +228,15 @@ filter. That means, you can now have nice actor-based suites:
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('user_features'))
+            new Suite('user_features')
                 ->withFilter(new RoleFilter('user'))
                 ->withPaths('%paths.base%/features')
                 ->withContexts(UserContext::class)
         )
         ->withSuite(
-            (new Suite('api_features'))
+            new Suite('api_features')
                 ->withFilter(new RoleFilter('admin'))
                 ->withPaths('%paths.base%/features')
                 ->withContexts(AdminContext::class)
@@ -267,11 +279,11 @@ This is achieved by specifying the filter in the gherkin configuration:
     use Behat\Config\Filter\TagFilter;
     use Behat\Config\Profile;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withFilter(new TagFilter('~@wip'))
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
 
@@ -309,21 +321,21 @@ develop different layers of your application with Behat:
     use Behat\Config\Profile;
     use Behat\Config\Suite;
 
-    $profile = (new Profile('default'))
+    $profile = new Profile('default')
         ->withSuite(
-            (new Suite('domain_features'))
+            new Suite('domain_features')
                 ->withPaths('%paths.base%/features')
                 ->withContexts(DomainContext::class)
         )
         ->withSuite(
-            (new Suite('web_features'))
+            new Suite('web_features')
                 ->withFilter(new TagFilter('@web'))
                 ->withPaths('%paths.base%/features')
                 ->withContexts(WebContext::class)
         )
     ;
 
-    return (new Config())
+    return new Config()
         ->withProfile($profile)
     ;
 
